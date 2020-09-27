@@ -10,7 +10,9 @@ from nltk import stem
 import nltk
 #nltk.download('punkt')
 #nltk.download('stopwords')
-
+from nltk.stem import PorterStemmer
+# nltk.download('punkt')
+# nltk.download('stopwords')
 
 
 #preprocessing on spamcollection
@@ -36,12 +38,14 @@ def preprocess(lines,res,stemList) :
 #split res into 2 lists, 1 for spam, 1 for ham
 def splitList(lines,res,spamList,hamList) :
     res = preprocess(lines,res,stemList)
-    for i in range(0,len(lines)) :
-        if res[i][0]=='spam':
+    trainData = getTrainData(res)
+    testData = getTestData(res)
+    for i in range(0,len(trainData)) :
+        if trainData[i][0]=='spam':
             spamList.append(res[i])
         else : 
             hamList.append(res[i])
-    return hamList, spamList
+    return hamList, spamList, trainData, testData
 
 
 
@@ -248,28 +252,26 @@ def main():
     res,  hamList, spamList = [], [], []
     # read txt file in several lines
     lines = tuple(open('smsspamcollection.txt', 'r'))
-
     # def variables
     
-    hamList,spamList = splitList(lines,res,spamList,hamList)
-    print(hamList)
+    hamList,spamList,trainData,testData = splitList(lines,res,spamList,hamList) #spam and ham lists are in the train data
     hUniqueWords = getAllUniqueWords(hamList)#we get unique words from hame
     sUniqueWords = getAllUniqueWords(spamList)#we get unique words from spam
-    aUniqueWords = getAllUniqueWords(res)#we get all unique words
+    aUniqueWords = getAllUniqueWords(trainData)#we get all unique words
 
-    spamHamFrequency= probaSpamHam(res) #We get frequencies of ham and spam
+    spamHamFrequency= probaSpamHam(trainData) #We get frequencies of ham and spam
     hFrequency= valueFrequency(hamList,hUniqueWords) #we get frequencies from ham
     sFrequency= valueFrequency(spamList,sUniqueWords) #we get frequencies from spam
-    allFrequency= valueFrequency(res,aUniqueWords) #We get frequencies for all words
+    allFrequency= valueFrequency(trainData,aUniqueWords) #We get frequencies for all words
 
     predictedList = []
     valueList = [] #We want just spam or ham from the list
 
 
 
-    for i in range(0,len(res)):
-        predictedList.append(bayes(res[i][1],allFrequency,sFrequency,hFrequency,sUniqueWords,hUniqueWords,spamHamFrequency)) #res[i][1] is the test data
-        valueList.append(res[i][0])
+    for i in range(0,len(testData)):
+        predictedList.append(bayes(testData[i][1],allFrequency,sFrequency,hFrequency,sUniqueWords,hUniqueWords,spamHamFrequency)) #res[i][1] is the test data
+        valueList.append(testData[i][0])
 
 
     precHam = precisionPrediction(predictedList,valueList,"ham") #Precision for ham
