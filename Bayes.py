@@ -27,10 +27,6 @@ def getTestData(allData):
     return testData
 
 
-trainData = getTrainData(res)
-testData = getTestData(res)
-
-
 def allValue(data): #tell the all differents words in all mail
     """
     data is a [list of string]. list of string is the different words in a mail. it's our data
@@ -243,14 +239,14 @@ def F1Score(precision,recall): #Give the F1Score
 
 def main():
 
-    hUniqueWords = getAllUniqueWords(hamList)
-    sUniqueWords = getAllUniqueWords(spamList)
-    aUniqueWords = getAllUniqueWords(res)
+    hUniqueWords = getAllUniqueWords(hamList)#we get unique words from hame
+    sUniqueWords = getAllUniqueWords(spamList)#we get unique words from spam
+    aUniqueWords = getAllUniqueWords(res)#we get all unique words
 
-    spamHamFrequency= probaSpamHam(res)
-    hFrequency= valueFrequency(hamList,hUniqueWords)
-    sFrequency= valueFrequency(spamList,sUniqueWords)
-    allFrequency= valueFrequency(res,aUniqueWords)
+    spamHamFrequency= probaSpamHam(res) #We get frequencies of ham and spam
+    hFrequency= valueFrequency(hamList,hUniqueWords) #we get frequencies from ham
+    sFrequency= valueFrequency(spamList,sUniqueWords) #we get frequencies from spam
+    allFrequency= valueFrequency(res,aUniqueWords) #We get frequencies for all words
 
     predictedList = []
     valueList = [] #We want just spam or ham from the list
@@ -258,24 +254,24 @@ def main():
 
 
     for i in range(0,len(res)):
-        predictedList.append(bayes(res[i][1],allFrequency,sFrequency,hFrequency,sUniqueWords,hUniqueWords,spamHamFrequency))
+        predictedList.append(bayes(res[i][1],allFrequency,sFrequency,hFrequency,sUniqueWords,hUniqueWords,spamHamFrequency)) #res[i][1] is the test data
         valueList.append(res[i][0])
 
 
-    precHam = precisionPrediction(predictedList,valueList,"ham")
-    precSpam = precisionPrediction(predictedList,valueList,"spam")
-    recallHam = recallPrediction(predictedList,valueList,"ham")
-    recallSpam = recallPrediction(predictedList,valueList,"spam")
+    precHam = precisionPrediction(predictedList,valueList,"ham") #Precision for ham
+    precSpam = precisionPrediction(predictedList,valueList,"spam")#Precision for Spam
+    recallHam = recallPrediction(predictedList,valueList,"ham") #Recall for ham
+    recallSpam = recallPrediction(predictedList,valueList,"spam")#recall for spam
 
-    print("Accuracy : ",accuracyPrediction(predictedList,valueList))
+    print("Accuracy : ",accuracyPrediction(predictedList,valueList)) #Accuracy for our model
     print("Precision on ham :", precHam)
     print("Precision on spam :", precSpam)
     print("recall on ham :", recallHam)
     print("recall on spam :",recallSpam)
-    print("F1Score on ham",F1Score(precHam,recallHam))
-    print("F1Score on spam",F1Score(precSpam,recallSpam))
+    print("F1Score on ham",F1Score(precHam,recallHam)) #F1Score for ham
+    print("F1Score on spam",F1Score(precSpam,recallSpam)) #F1Score for spam
 
     tmps2=time.clock()
-    print ("Temps d'execution en secondes = " ,(tmps2-tmps1))
+    print ("Executiuon time in secondes = " ,(tmps2-tmps1)) #exec time
 
 main()
