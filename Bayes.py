@@ -181,40 +181,40 @@ def getTestData(allData):
 trainData = getTrainData(res)
 testData = getTestData(res)
 print(len(res),len(trainData),len(testData))
-#print(getAllUniqueWords(hamList))
-#print(valueFrequency(hamList,getAllUniqueWords(hamList)))
 
-# hUniqueWords = getAllUniqueWords(hamList)
-# sUniqueWords = getAllUniqueWords(spamList)
-# aUniqueWords = getAllUniqueWords(res)
+def main():
 
-# spamHamFrequency= probaSpamHam(res)
-# hFrequency= valueFrequency(hamList,hUniqueWords)
-# sFrequency= valueFrequency(spamList,sUniqueWords)
-# allFrequency= valueFrequency(res,aUniqueWords)
+    hUniqueWords = getAllUniqueWords(hamList)
+    sUniqueWords = getAllUniqueWords(spamList)
+    aUniqueWords = getAllUniqueWords(res)
 
-# predictedList = []
-# valueList = [] #We want just spam or ham from the list
+    spamHamFrequency= probaSpamHam(res)
+    hFrequency= valueFrequency(hamList,hUniqueWords)
+    sFrequency= valueFrequency(spamList,sUniqueWords)
+    allFrequency= valueFrequency(res,aUniqueWords)
 
-
-
-# for i in range(0,len(res)):
-#     predictedList.append(Bayes(res[i][1],allFrequency,sFrequency,hFrequency,sUniqueWords,hUniqueWords,spamHamFrequency))
-#     valueList.append(res[i][0])
+    predictedList = []
+    valueList = [] #We want just spam or ham from the list
 
 
-# precHam = precisionPrediction(predictedList,valueList,"ham")
-# precSpam = precisionPrediction(predictedList,valueList,"spam")
-# recallHam = recallPrediction(predictedList,valueList,"ham")
-# recallSpam = recallPrediction(predictedList,valueList,"spam")
 
-# print("Accuracy : ",accuracyPrediction(predictedList,valueList))
-# print("Precision on ham :", precHam)
-# print("Precision on spam :", precSpam)
-# print("recall on ham :", recallHam)
-# print("recall on spam :",recallSpam)
-# print("F1Score on ham",F1Score(precHam,recallHam))
-# print("F1Score on spam",F1Score(precSpam,recallSpam))
+    for i in range(0,len(res)):
+        predictedList.append(Bayes(res[i][1],allFrequency,sFrequency,hFrequency,sUniqueWords,hUniqueWords,spamHamFrequency))
+        valueList.append(res[i][0])
 
-# tmps2=time.clock()
-# print ("Temps d'execution en secondes = " ,(tmps2-tmps1))
+
+    precHam = precisionPrediction(predictedList,valueList,"ham")
+    precSpam = precisionPrediction(predictedList,valueList,"spam")
+    recallHam = recallPrediction(predictedList,valueList,"ham")
+    recallSpam = recallPrediction(predictedList,valueList,"spam")
+
+    print("Accuracy : ",accuracyPrediction(predictedList,valueList))
+    print("Precision on ham :", precHam)
+    print("Precision on spam :", precSpam)
+    print("recall on ham :", recallHam)
+    print("recall on spam :",recallSpam)
+    print("F1Score on ham",F1Score(precHam,recallHam))
+    print("F1Score on spam",F1Score(precSpam,recallSpam))
+
+    tmps2=time.clock()
+    print ("Temps d'execution en secondes = " ,(tmps2-tmps1))
