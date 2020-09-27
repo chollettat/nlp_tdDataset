@@ -14,20 +14,46 @@ import nltk
 tmps1=time.clock()
  
 
+def getTrainData(allData):
+    trainData=[]
+    for i in range(0,int(len(allData)*0.7)):
+        trainData.append(allData[i])
+    return trainData
+
+def getTestData(allData):
+    testData=[]
+    for i in range(int(len(allData)*0.7),len(allData)):
+        testData.append(allData[i])
+    return testData
 
 
-def allValue(sdata): #tell the all possible value of each feature
+trainData = getTrainData(res)
+testData = getTestData(res)
+
+
+def allValue(data): #tell the all differents words in all mail
+    """
+    data is a [list of string]. list of string is the different words in a mail. it's our data
+
+    it returns a list of string, a list of unique word
+    """
     i=0
     allwords = []
     
-    while i < len(sdata):
-        if not (sdata[i] in allwords):
-            allwords.append(sdata[i])
+    while i < len(data):
+        if not (data[i] in allwords):
+            allwords.append(data[i])
         i = i+1
     allwords.sort()
     return allwords
 
-def getAllWords(data):
+def getAllWords(data): # transform a list of list of string into a list of string, Which means merging all mail together
+    """
+    data is a [list of string]. list of string is the different words in a mail. it's our data
+
+    it returns a list of string, a list of word
+
+    """
     words = []
     for i in range(len(data)):
         for j in range(len(data[i])):
@@ -35,27 +61,74 @@ def getAllWords(data):
     return words
 
 
-def valueFrequency(allData,allUniqueWords): #Give all frequency of a feature list
+def getAllUniqueWords(data):#Give all unique words in our data
+    """
+    data is a list [ham or spam, [list of string]]. list of string is the different words in a mail. it's our data
+
+    it returns a list of string, list of unique words
+    """
+    liste =[]
+    for i in range(0,len(data)):
+        liste.append(data[i][1]) #transform shape of data
+    allwords = getAllWords(liste)
+    listWords = allValue(allwords)
+    return listWords
+
+
+def probaSpamHam(data): #Give the frequency of Ham mails and Spam mails
+    """
+    data is a list [ham or spam, [list of string]]. list of string is the different words in a mail. it's our data
+
+    it returns a list of float, [frequency of spam, frequency of ham]
+
+    """
+
+    res=[0,0]
+    for i in range(len(data)):
+        if data[i][0]=='spam':
+            res[0] = res[0]+ 1
+        else : 
+            res[1] = res[1] + 1
+    res[0] = res[0] / len(data)
+    res[1] = res[1] / len(data)
+    return res
+
+def valueFrequency(allData,allUniqueWords): #Give frequency for each unique words 
+    """
+    allData is a list [ham or spam, [list of string]]. list of string is the different words in a mail. it's our data
+    allUniqueWords is a list of unique words of our data
+
+    it returns a list of float,  the frequency for each unique word
+    """
     frequencyList = []
     data=[]
-    for i in range(0,len(allData)):
+    for i in range(0,len(allData)): #Transform shape of data 
         data.append(allData[i][1])
     
     data = getAllWords(data)
-    for j in range(0,len(allUniqueWords)):
+    for j in range(0,len(allUniqueWords)): 
         frequencyList.append(0)
 
     for k in range(0,len(allUniqueWords)):
-        frequencyList[k] = data.count(allUniqueWords[k])
+        frequencyList[k] = data.count(allUniqueWords[k]) # We count each unique words 
     
     for j in range(0,len(allUniqueWords)):
-        frequencyList[j] = frequencyList[j] / len(data)
+        frequencyList[j] = frequencyList[j] / len(data) # We get the frequency by diving by all words 
     
     return frequencyList
 
 
 
-def Bayes(data,allFrequencyWords,sFrequency,hFrequency,allValueS,allValueH,spamHamFrequency): #data is a list without the "p or e"
+def bayes(data,allFrequencyWords,sFrequency,hFrequency,allValueS,allValueH,spamHamFrequency): #this is our model prediction
+    """
+    Data is a list of words in a mail
+    allFrequencyWords is a list of float which contains frequency of all unique words in our data
+    sFrequency (hfrequency) is a list of float which contains frequency only for spam (ham) data
+    allValueS (allValueH) is a list of unique words only for spam (ham) data
+    spamHamFrequency is a list which contains the frequency of Spam and Ham in the data
+
+    it returns a string, the predicted data
+    """
     sumS=0
     sumH=0
     
@@ -101,86 +174,72 @@ for i in range(0,len(lines)) :
   res[i][1] = [word for word in tokens if not word in stop_words]
 
 
-
-
-def probaSpamHam(data):
-
-    res=[0,0]
-    for i in range(len(data)):
-        if data[i][0]=='spam':
-            res[0] = res[0]+ 1
-        else : 
-            res[1] = res[1] + 1
-    res[0] = res[0] / len(data)
-    res[1] = res[1] / len(data)
-    return res
     
     
 
+def accuracyPrediction(listpredicted,listData):#Give  the accuracy of the modelPrediction
+    """
+    listpredicted is a list of string, containing only "ham" or "spam" predicted by bayes
+    listData is a list of string, containg only "ham" or "spam" in our actual data
 
-def getAllUniqueWords(liste):
-    sList =[]
-    for i in range(0,len(liste)):
-        sList.append(liste[i][1])
-    allwords = getAllWords(sList)
-    listWords = allValue(allwords)
-    return listWords
-
-def accuracyPrediction(listpredicted,listData):#Give  the precision of the modelPrediction
+    it returns a float, the accuracy of our model
+    """
     acc = 0
     for i in range(0,len(listpredicted)):
         if listpredicted[i]==listData[i]:
             acc = acc + 1
 
-    print(acc)
     acc = acc / len(listpredicted)
 
     return acc
 
 def precisionPrediction(listpredicted,listData,label):#Give  the precision of the modelPrediction
+    """
+    listpredicted is a list of string, containing only "ham" or "spam" predicted by bayes
+    listData is a list of string, containg only "ham" or "spam" in our actual data
+
+    it returns a float, the precision of our model
+    """
+
     TP = 0
     FP =0
     for i in range(0,len(listpredicted)):
-        if listpredicted[i]==listData[i]==label:
+        if listpredicted[i]==listData[i]==label: # We get the  True Positive
             TP = TP + 1
-        if (listpredicted[i]==label and listData[i] != label):
+        if (listpredicted[i]==label and listData[i] != label): # We get the  False Positive
             FP = FP +1
     res = TP / (TP + FP)
 
     return res
 
-def recallPrediction(listpredicted,listData,label):
+def recallPrediction(listpredicted,listData,label):#Give the recall
+    """
+    listpredicted is a list of string, containing only "ham" or "spam" predicted by bayes
+    listData is a list of string, containg only "ham" or "spam" in our actual data
+
+    it returns a float, the recall of our model
+    """
     TP = 0
     FN = 0
     for i in range(0,len(listpredicted)):
-        if listpredicted[i]==listData[i]==label:
+        if listpredicted[i]==listData[i]==label: # We get the  True Positive
             TP = TP + 1
-        if (listpredicted[i]!=label and listData[i] == label):
+        if (listpredicted[i]!=label and listData[i] == label):# We get the  False Negative
             FN = FN +1
     res = TP / (TP + FN)
 
     return res
 
-def F1Score(precision,recall):
+def F1Score(precision,recall): #Give the F1Score
+    """
+    precision and recall are both float
+
+    it returns a float, the F1Score of our model
+    """
     return 2*(recall*precision)/(recall+precision)
 
 
-def getTrainData(allData):
-    trainData=[]
-    for i in range(0,int(len(allData)*0.7)):
-        trainData.append(allData[i])
-    return trainData
 
-def getTestData(allData):
-    testData=[]
-    for i in range(int(len(allData)*0.7),len(allData)):
-        testData.append(allData[i])
-    return testData
-
-
-trainData = getTrainData(res)
-testData = getTestData(res)
-print(len(res),len(trainData),len(testData))
 
 def main():
 
@@ -199,7 +258,7 @@ def main():
 
 
     for i in range(0,len(res)):
-        predictedList.append(Bayes(res[i][1],allFrequency,sFrequency,hFrequency,sUniqueWords,hUniqueWords,spamHamFrequency))
+        predictedList.append(bayes(res[i][1],allFrequency,sFrequency,hFrequency,sUniqueWords,hUniqueWords,spamHamFrequency))
         valueList.append(res[i][0])
 
 
@@ -218,3 +277,5 @@ def main():
 
     tmps2=time.clock()
     print ("Temps d'execution en secondes = " ,(tmps2-tmps1))
+
+main()

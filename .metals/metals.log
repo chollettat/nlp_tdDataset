@@ -1,5 +1,0 @@
-2020.09.27 11:22:55 INFO  started: Metals version 0.9.4 in workspace 'C:\Users\aurel\OneDrive\Documents\ING3 IA\TP NLP\TD2' for client vscode.
-2020.09.27 11:22:55 INFO  time: initialize in 0.81s
-2020.09.27 11:22:57 WARN  no build tool detected in workspace 'C:\Users\aurel\OneDrive\Documents\ING3 IA\TP NLP\TD2'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
-sept. 27, 2020 5:10:57 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
-INFOS: Unsupported notification method: $/setTraceNotification
