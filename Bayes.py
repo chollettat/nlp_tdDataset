@@ -11,8 +11,40 @@ import nltk
 #nltk.download('punkt')
 #nltk.download('stopwords')
 
-tmps1=time.clock()
- 
+
+
+#preprocessing on spamcollection
+def preprocess(lines,res,stemList) : 
+
+    for i in range(0,len(lines)) :
+        res.append(lines[i].split("\t")) #split with ham/spam and message
+        res[i][1] = res[i][1].lower().strip()
+
+    ##define stopwords##
+    stop_words = stopwords.words('english') 
+    stop_words.append("u") #add stopwords to the list
+    stemmer = PorterStemmer()
+
+    for i in range(0,len(lines)) :
+        tokens = word_tokenize(res[i][1])
+        res[i][1] = [word for word in tokens if not word in stop_words]   # remove stopwords
+        for word in res[i][1]:
+            stemList.append(stemmer.stem(word))
+    return res
+
+
+#split res into 2 lists, 1 for spam, 1 for ham
+def splitList(lines,res,spamList,hamList) :
+    res = preprocess(lines,res,stemList)
+    for i in range(0,len(lines)) :
+        if res[i][0]=='spam':
+            spamList.append(res[i])
+        else : 
+            hamList.append(res[i])
+    return hamList, spamList
+
+
+
 
 def getTrainData(allData):
     trainData=[]
@@ -144,33 +176,7 @@ def bayes(data,allFrequencyWords,sFrequency,hFrequency,allValueS,allValueH,spamH
     else : return "ham"
 
 
-# read and split txt file in several lines
-lines = tuple(open('smsspamcollection.txt', 'r'))
-res, hamList, spamList = [], [],[]
 
-for i in range(0,len(lines)) :
-    res.append(lines[i].split("\t"))
-    res[i][1] = res[i][1].lower()
-
-    ###TESTS FOR FIND ANOTHER STOPWORDS###
-    if res[i][0]=='spam':
-        spamList.append(res[i])
-    else : 
-       hamList.append(res[i])
-
-#res[i][1] = re.sub(r'\d+','',res[i][1])
-#stemmer = stem.SnowballStemmer('english')
-stop_words = stopwords.words('english')
-#stop_words.append("go")
-
-for i in range(0,len(lines)) :
-
-  # remove stopwords
-  tokens = word_tokenize(res[i][1])
-  res[i][1] = [word for word in tokens if not word in stop_words]
-
-
-    
     
 
 def accuracyPrediction(listpredicted,listData):#Give  the accuracy of the modelPrediction
@@ -235,10 +241,18 @@ def F1Score(precision,recall): #Give the F1Score
     return 2*(recall*precision)/(recall+precision)
 
 
-
+stemList =[]
 
 def main():
+    tmps1=time.clock()
+    res,  hamList, spamList = [], [], []
+    # read txt file in several lines
+    lines = tuple(open('smsspamcollection.txt', 'r'))
 
+    # def variables
+    
+    hamList,spamList = splitList(lines,res,spamList,hamList)
+    print(hamList)
     hUniqueWords = getAllUniqueWords(hamList)#we get unique words from hame
     sUniqueWords = getAllUniqueWords(spamList)#we get unique words from spam
     aUniqueWords = getAllUniqueWords(res)#we get all unique words
