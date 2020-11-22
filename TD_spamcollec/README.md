@@ -1,2 +1,2 @@
 ﻿# nlp_tdDataset
-# main file is Bayes.py
+#TD 2 - spam collection : main file is Bayes.py
